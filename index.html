@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#248bed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Топливо">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Калькулятор остатка топлива — учёт пробега и расхода по дням.">
+<title>Калькулятор остатка топлива</title>
+
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%234A9EFF'/><stop offset='1' stop-color='%23156FE0'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23g)'/><g transform='translate(34,30)'><path d='M28 8 h60 a12 12 0 0 1 12 12 v112 a12 12 0 0 1 -12 12 h-60 a12 12 0 0 1 -12 -12 v-112 a12 12 0 0 1 12 -12 z' fill='white'/><path d='M28 8 h60 a12 12 0 0 1 12 12 v14 h-84 v-14 a12 12 0 0 1 12 -12 z' fill='%23E8F2FF'/><circle cx='58' cy='70' r='20' fill='%23248bed'/><path d='M58 58 c -6 10 -10 16 -10 22 a 10 10 0 0 0 20 0 c 0 -6 -4 -12 -10 -22 z' fill='white'/><rect x='76' y='16' width='14' height='8' rx='3' fill='%23248bed'/></g></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%234A9EFF'/><stop offset='1' stop-color='%23156FE0'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23g)'/><g transform='translate(34,30)'><path d='M28 8 h60 a12 12 0 0 1 12 12 v112 a12 12 0 0 1 -12 12 h-60 a12 12 0 0 1 -12 -12 v-112 a12 12 0 0 1 12 -12 z' fill='white'/><path d='M28 8 h60 a12 12 0 0 1 12 12 v14 h-84 v-14 a12 12 0 0 1 12 -12 z' fill='%23E8F2FF'/><circle cx='58' cy='70' r='20' fill='%23248bed'/><path d='M58 58 c -6 10 -10 16 -10 22 a 10 10 0 0 0 20 0 c 0 -6 -4 -12 -10 -22 z' fill='white'/><rect x='76' y='16' width='14' height='8' rx='3' fill='%23248bed'/></g></svg>">
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+  --bg: var(--tg-theme-bg-color, #ffffff);
+  --secondary-bg: var(--tg-theme-secondary-bg-color, #f0f2f5);
+  --text: var(--tg-theme-text-color, #000000);
+  --hint: var(--tg-theme-hint-color, #707579);
+  --button: var(--tg-theme-button-color, #248bed);
+  --button-text: var(--tg-theme-button-text-color, #ffffff);
+  --input-border: rgba(128,128,128,0.3);
+  --danger: #e53935;
+  --success: #43a047;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--secondary-bg); color: var(--text); margin: 0; padding: 12px; padding-bottom: 40px; font-size: 15px; }
+.app { max-width: 480px; margin: 0 auto; }
+h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
+.card { background: var(--bg); border-radius: 16px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.month-nav { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-radius: 16px; padding: 6px 8px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.month-nav button { background: transparent; color: var(--button); border: none; font-size: 24px; padding: 4px 16px; cursor: pointer; border-radius: 10px; }
+.month-label { font-weight: 600; font-size: 16px; }
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sum-item { padding: 8px 10px; background: var(--secondary-bg); border-radius: 10px; }
+.sum-label { font-size: 11px; color: var(--hint); text-transform: uppercase; letter-spacing: 0.3px; }
+.sum-val { font-size: 17px; font-weight: 700; margin-top: 3px; }
+.sum-val.good { color: var(--success); }
+.sum-val.bad { color: var(--danger); }
+.days-list { display: flex; flex-direction: column; gap: 8px; }
+.day-card { background: var(--bg); border-radius: 14px; padding: 12px 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); cursor: pointer; }
+.day-card:active { background: var(--secondary-bg); }
+.day-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+.day-date { font-weight: 600; font-size: 15px; flex: 1; }
+.day-del-btn { background: transparent; border: none; color: var(--hint); font-size: 18px; padding: 8px 10px; cursor: pointer; border-radius: 8px; line-height: 1; flex-shrink: 0; min-width: 40px; min-height: 40px; display: flex; align-items: center; justify-content: center; }
+.day-del-btn:active { background: rgba(229,57,53,0.15); color: var(--danger); }
+.day-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; gap: 8px; }
+.day-row .lbl { color: var(--hint); flex-shrink: 0; }
+.day-row .val { font-weight: 600; text-align: right; }
+.day-row .val.bad { color: var(--danger); }
+.day-row .val.corrected { color: var(--button); }
+.manual-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 5px; background: rgba(36,139,237,0.15); color: var(--button); border-radius: 4px; margin-left: 4px; text-transform: uppercase; }
+.empty { text-align: center; padding: 24px 10px; color: var(--hint); font-size: 14px; }
+.add-btn { width: 100%; padding: 14px; background: var(--button); color: var(--button-text); border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+.add-btn:active { opacity: 0.85; }
+.tools { display: flex; gap: 8px; margin-top: 16px; }
+.tools button { flex: 1; padding: 11px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--input-border); background: var(--bg); color: var(--text); }
+.tools button:active { background: var(--secondary-bg); }
+.install-btn { width: 100%; padding: 13px; margin-top: 10px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; background: var(--success); color: #fff; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(67,160,71,0.3); animation: pulse 2s infinite; }
+.install-btn.show { display: flex; }
+.install-btn:active { opacity: 0.85; animation: none; }
+@keyframes pulse { 0%, 100% { box-shadow: 0 2px 8px rgba(67,160,71,0.3); } 50% { box-shadow: 0 2px 16px rgba(67,160,71,0.55); } }
+.help-btn { width: 100%; padding: 12px; margin-top: 8px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px dashed var(--button); background: rgba(36,139,237,0.08); color: var(--button); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.help-btn:active { background: rgba(36,139,237,0.16); }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-end; justify-content: center; z-index: 100; }
+.overlay.show { display: flex; }
+.modal { background: var(--bg); width: 100%; max-width: 480px; border-radius: 20px 20px 0 0; padding: 16px; max-height: 92vh; overflow-y: auto; }
+.modal h2 { margin: 0 0 14px; font-size: 17px; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 12px; color: var(--hint); margin-bottom: 5px; margin-left: 2px; }
+.field input { width: 100%; padding: 11px 12px; border: 1px solid var(--input-border); border-radius: 10px; background: var(--bg); color: var(--text); font-size: 16px; outline: none; }
+.field input:focus { border-color: var(--button); }
+.field input.manual { border-color: var(--button); background: rgba(36,139,237,0.06); }
+.row2 { display: flex; gap: 10px; }
+.row2 .field { flex: 1; }
+.section-title { font-size: 12px; color: var(--button); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 16px 0 8px; }
+.field-with-reset { position: relative; }
+.field-with-reset input { padding-right: 44px; }
+.reset-btn { position: absolute; right: 6px; top: 26px; background: var(--secondary-bg); border: none; color: var(--button); font-size: 16px; padding: 6px 10px; cursor: pointer; border-radius: 8px; line-height: 1; }
+.field-hint { font-size: 11px; color: var(--hint); margin-top: 4px; margin-left: 2px; line-height: 1.4; }
+.modal-actions { display: flex; gap: 10px; margin-top: 20px; position: sticky; bottom: -16px; background: var(--bg); padding: 10px 0 16px; }
+.modal-actions button { flex: 1; padding: 14px; border: none; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; }
+.btn-save { background: var(--button); color: var(--button-text); }
+.btn-cancel { background: var(--secondary-bg); color: var(--text); }
+.btn-danger { background: var(--danger); color: white; }
+.confirm-modal { max-width: 360px; border-radius: 16px; padding: 20px; text-align: center; }
+.confirm-modal h2 { font-size: 16px; margin-bottom: 10px; }
+.confirm-modal p { font-size: 14px; color: var(--hint); margin: 0 0 18px; line-height: 1.5; }
+.toast { position: fixed; left: 50%; bottom: 30px; transform: translateX(-50%) translateY(20px); background: rgba(0,0,0,0.87); color: white; padding: 12px 18px; border-radius: 12px; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 300; max-width: 90%; text-align: center; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.storage-warn { background: #fff3cd; color: #856404; padding: 10px 12px; border-radius: 10px; font-size: 12px; margin-bottom: 10px; border: 1px solid #ffeaa7; }
+.author { text-align: center; font-size: 12px; color: var(--hint); margin-top: 24px; padding: 12px 0 4px; letter-spacing: 0.3px; }
+.author b { color: var(--button); font-weight: 700; }
+.help-section { margin-bottom: 18px; }
+.help-section h3 { font-size: 14px; color: var(--button); margin: 0 0 8px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.help-steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.help-steps li { counter-increment: step; position: relative; padding: 10px 12px 10px 42px; font-size: 14px; line-height: 1.5; background: var(--secondary-bg); border-radius: 10px; margin-bottom: 6px; }
+.help-steps li::before { content: counter(step); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 50%; background: var(--button); color: var(--button-text); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.help-tip { background: rgba(36,139,237,0.08); border-left: 3px solid var(--button); padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.5; margin-top: 10px; }
+.help-tip b { color: var(--button); }
+.help-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: var(--button); color: var(--button-text); margin-left: 6px; }
+
+/* Плашка обновления */
+.update-banner {
+  display: none;
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  color: white;
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(67,160,71,0.35);
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  animation: slideDown 0.35s ease;
+}
+.update-banner.show { display: flex; }
+.update-banner .update-text { flex: 1; line-height: 1.4; }
+.update-banner .update-text small { display: block; font-weight: 400; opacity: 0.85; font-size: 11px; margin-top: 2px; }
+.update-banner button {
+  background: white; color: #2e7d32; border: none;
+  padding: 8px 14px; border-radius: 8px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  flex-shrink: 0; white-space: nowrap;
+}
+.update-banner button:active { opacity: 0.85; }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.app-version { text-align: center; font-size: 10px; color: var(--hint); margin-top: 6px; letter-spacing: 0.5px; opacity: 0.6; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>⛽ Калькулятор остатка топлива</h1>
+
+  <!-- Плашка обновления -->
+  <div class="update-banner" id="updateBanner">
+    <div class="update-text">
+      🎉 Доступно обновление
+      <small id="updateVersionLabel">Новая версия готова к установке</small>
+    </div>
+    <button id="updateBtn">Обновить</button>
+  </div>
+
+  <div id="storageWarn" class="storage-warn" style="display:none;">⚠ Хранилище недоступно.</div>
+
+  <div class="month-nav">
+    <button id="prevMonth">‹</button>
+    <div class="month-label" id="monthLabel">—</div>
+    <button id="nextMonth">›</button>
+  </div>
+
+  <div class="card" id="summaryCard"></div>
+  <button class="add-btn" id="addBtn">+ Добавить день</button>
+  <div class="days-list" id="daysList" style="margin-top:10px;"></div>
+
+  <div class="tools">
+    <button id="btnExport">⬇ Экспорт</button>
+    <button id="btnImport">⬆ Импорт</button>
+  </div>
+  <input type="file" id="fileInput" accept=".json" style="display:none;">
+
+  <button class="install-btn" id="installBtn">📲 Установить приложение</button>
+  <button class="help-btn" id="helpBtn">❓ Как добавить на рабочий стол</button>
+
+  <div class="author">Разработчик · <b>Минаев Захар</b></div>
+  <div class="app-version" id="appVersion">v —</div>
+</div>
+
+<!-- Редактор дня -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modalTitle">Новый день</h2>
+    <div id="modalFields"></div>
+    <div class="modal-actions">
+      <button class="btn-danger" id="btnDelete" style="display:none; flex:0 0 60px;">🗑</button>
+      <button class="btn-cancel" id="btnCancel">Отмена</button>
+      <button class="btn-save" id="btnSave">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Подтверждение -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal confirm-modal">
+    <h2 id="confirmTitle">Удалить?</h2>
+    <p id="confirmText"></p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="confirmNo">Отмена</button>
+      <button class="btn-danger" id="confirmYes">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Инструкция -->
+<div class="overlay" id="helpOverlay">
+  <div class="modal">
+    <h2>📲 Как добавить на рабочий стол</h2>
+    <div id="helpContent"></div>
+    <div class="modal-actions">
+      <button class="btn-save" id="helpClose">Понятно</button>
+    </div>
+  </div>
+</div>
+
+<datalist id="normList"></datalist>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// ВЕРСИЯ ПРИЛОЖЕНИЯ
+// Меняйте это число при каждом обновлении!
+// ============================================================
+const APP_VERSION = '2026-09-14.1';
+
+// ============================================================
+// СЕРВИС ОБНОВЛЕНИЯ
+// ============================================================
+const UpdateService = (function() {
+  let swRegistration = null;
+  let updateBanner = null;
+  let updateBtn = null;
+  let updateVersionLabel = null;
+  let updateAvailable = false;
+
+  function init() {
+    updateBanner = document.getElementById('updateBanner');
+    updateBtn = document.getElementById('updateBtn');
+    updateVersionLabel = document.getElementById('updateVersionLabel');
+    const vEl = document.getElementById('appVersion');
+    if (vEl) vEl.textContent = 'v ' + APP_VERSION;
+
+    if (!('serviceWorker' in navigator)) return;
+    registerSW();
+
+    navigator.serviceWorker.addEventListener('message', function(event) {
+      if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+        showUpdateBanner(event.data.version);
+      }
+    });
+
+    updateBtn.addEventListener('click', applyUpdate);
+  }
+
+  function registerSW() {
+    const swCode = `
+      const SW_VERSION = '${APP_VERSION}';
+      self.addEventListener('install', function(event) {
+        self.skipWaiting();
+      });
+      self.addEventListener('activate', function(event) {
+        event.waitUntil(self.clients.claim());
+      });
+      self.addEventListener('fetch', function(event) {});
+    `;
+    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+    const swUrl = URL.createObjectURL(swBlob);
+
+    navigator.serviceWorker.register(swUrl, { scope: './' })
+      .then(function(reg) {
+        swRegistration = reg;
+        // Проверяем обновления при возврате на страницу
+        window.addEventListener('focus', function() {
+          reg.update().catch(function(){});
+        });
+      })
+      .catch(function(err) {
+        console.warn('[Update] SW не зарегистрирован:', err.message);
+      });
+
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+  }
+
+  function showUpdateBanner(version) {
+    if (updateAvailable) return;
+    updateAvailable = true;
+    updateVersionLabel.textContent = 'Версия ' + (version || APP_VERSION);
+    updateBanner.classList.add('show');
+  }
+
+  function applyUpdate() {
+    updateBtn.disabled = true;
+    updateBtn.textContent = 'Обновляем...';
+    if (swRegistration && swRegistration.waiting) {
+      swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+    setTimeout(function() {
+      window.location.reload();
+    }, 800);
+  }
+
+  return { init: init, version: APP_VERSION };
+})();
+
+// ============================================================
+// PWA: Манифест
+// ============================================================
+(function initPWA(){
+  const iconSvg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%234A9EFF'/><stop offset='1' stop-color='%23156FE0'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23g)'/><g transform='translate(34,30)'><path d='M28 8 h60 a12 12 0 0 1 12 12 v112 a12 12 0 0 1 -12 12 h-60 a12 12 0 0 1 -12 -12 v-112 a12 12 0 0 1 12 -12 z' fill='white'/><path d='M28 8 h60 a12 12 0 0 1 12 12 v14 h-84 v-14 a12 12 0 0 1 12 -12 z' fill='%23E8F2FF'/><circle cx='58' cy='70' r='20' fill='%23248bed'/><path d='M58 58 c -6 10 -10 16 -10 22 a 10 10 0 0 0 20 0 c 0 -6 -4 -12 -10 -22 z' fill='white'/><rect x='76' y='16' width='14' height='8' rx='3' fill='%23248bed'/></g></svg>";
+  const iconDataUri = "data:image/svg+xml;utf8," + iconSvg;
+  try {
+    const manifest = {
+      name: "Калькулятор остатка топлива",
+      short_name: "Топливо",
+      start_url: ".",
+      display: "standalone",
+      background_color: "#f0f2f5",
+      theme_color: "#248bed",
+      lang: "ru",
+      icons: [
+        { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any" },
+        { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+      ]
+    };
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = URL.createObjectURL(blob);
+    document.head.appendChild(link);
+  } catch(e) {}
+})();
+
+// ============================================================
+// Своя кнопка установки
+// ============================================================
+(function initInstallButton(){
+  const installBtn = document.getElementById('installBtn');
+  let deferredPrompt = null;
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.classList.add('show');
+  });
+  installBtn.addEventListener('click', function() {
+    if (!deferredPrompt) { openHelp(); return; }
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(choice) {
+      if (choice.outcome === 'accepted') {
+        showToast('Приложение установлено ✓');
+        installBtn.classList.remove('show');
+      }
+      deferredPrompt = null;
+    });
+  });
+  window.addEventListener('appinstalled', function() {
+    installBtn.classList.remove('show');
+    deferredPrompt = null;
+  });
+})();
+
+// ============================================================
+// Telegram
+// ============================================================
+const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
+function haptic(s) { if (tg && tg.HapticFeedback) { try { tg.HapticFeedback.impactOccurred(s || 'light'); } catch(e){} } }
+function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(showToast._t); showToast._t = setTimeout(()=>t.classList.remove('show'), 2200); }
+
+// ============================================================
+// Хранилище
+// ============================================================
+const STORAGE_KEY = 'fuel_tracker_v5';
+const NORMS_KEY = 'fuel_norms_v1';
+let data = {};
+let norms = { highway: [], million: [], city: [] };
+
+try {
+  const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('fuel_tracker_v4') || localStorage.getItem('fuel_tracker_v3') || localStorage.getItem('fuel_tracker_v2');
+  if (raw) data = JSON.parse(raw);
+  const rawNorms = localStorage.getItem(NORMS_KEY);
+  if (rawNorms) norms = JSON.parse(rawNorms);
+} catch(e) {}
+
+function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){} }
+function saveNorms() { try { localStorage.setItem(NORMS_KEY, JSON.stringify(norms)); } catch(e){} }
+
+// ============================================================
+// Утилиты
+// ============================================================
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTHS_GEN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const WEEKDAYS = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+let cursor = new Date();
+let editingDate = null;
+
+function ymd(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function parseYmd(s) { const p = s.split('-').map(Number); return new Date(p[0], p[1]-1, p[2]); }
+function num(v) { const n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function val(id) { const el = document.getElementById(id); return el ? num(el.value) : 0; }
+function fmt(n, d) { return Number(n || 0).toFixed(d === undefined ? 2 : d); }
+function rememberNorm(kind, value) {
+  const v = num(value);
+  if (!v || v <= 0) return;
+  const arr = norms[kind];
+  const idx = arr.indexOf(v);
+  if (idx !== -1) arr.splice(idx, 1);
+  arr.unshift(v);
+  if (arr.length > 15) arr.length = 15;
+  saveNorms();
+}
+function refreshNormDatalist() {
+  const dl = document.getElementById('normList');
+  if (!dl) return;
+  const all = [].concat(norms.highway, norms.million, norms.city).filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a-b);
+  dl.innerHTML = all.map(v=>'<option value="'+v+'">').join('');
+}
+function prevDateBefore(dateStr) {
+  const dates = Object.keys(data).sort();
+  const prev = dates.filter(d => d < dateStr);
+  return prev.length ? prev[prev.length-1] : null;
+}
+
+// ============================================================
+// Пересчёт
+// ============================================================
+function recalc() {
+  const dates = Object.keys(data).sort();
+  let prevOdo = null, prevFuel = null;
+  for (let i = 0; i < dates.length; i++) {
+    const date = dates[i], r = data[date];
+    let odoStart;
+    if (r.odoStartManual && r.odoStart != null) odoStart = num(r.odoStart);
+    else if (prevOdo !== null) odoStart = prevOdo;
+    else odoStart = num(r.odoStart);
+    let fuelStart;
+    if (r.fuelStartManual && r.fuelStart != null) fuelStart = num(r.fuelStart);
+    else if (prevFuel !== null) fuelStart = prevFuel;
+    else fuelStart = num(r.fuelStart);
+    const odoEnd = num(r.odoEnd);
+    const distance = Math.max(0, odoEnd - odoStart);
+    const hway = num(r.highway), mill = num(r.million);
+    const city = Math.max(0, distance - hway - mill);
+    const spent = hway*num(r.highwayNorm)/100 + mill*num(r.millionNorm)/100 + city*num(r.cityNorm)/100;
+    const fuelEnd = fuelStart + num(r.fuelAdded) - spent;
+    r._odoStart = odoStart; r._odoEnd = odoEnd; r._distance = distance;
+    r._highway = hway; r._million = mill; r._city = city;
+    r._spent = spent; r._fuelStart = fuelStart; r._fuelEnd = fuelEnd;
+    r._isManualOdo = !!r.odoStartManual; r._isManualFuel = !!r.fuelStartManual;
+    prevOdo = odoEnd; prevFuel = fuelEnd;
+  }
+  save();
+}
+
+// ============================================================
+// Отрисовка
+// ============================================================
+function render() {
+  recalc(); refreshNormDatalist();
+  const y = cursor.getFullYear(), m = cursor.getMonth();
+  document.getElementById('monthLabel').textContent = MONTHS[m] + ' ' + y;
+  const prefix = y + '-' + String(m+1).padStart(2,'0') + '-';
+  const monthDates = Object.keys(data).filter(d => d.indexOf(prefix) === 0).sort();
+  let totalDist = 0, totalSpent = 0, totalHighway = 0, totalMillion = 0, totalCity = 0, endFuel = 0;
+  monthDates.forEach(d => {
+    const r = data[d];
+    totalDist += r._distance; totalSpent += r._spent;
+    totalHighway += r._highway; totalMillion += r._million; totalCity += r._city;
+    endFuel = r._fuelEnd;
+  });
+  const summaryEl = document.getElementById('summaryCard');
+  if (monthDates.length === 0) {
+    summaryEl.innerHTML = '<div class="empty">Записей за этот месяц пока нет</div>';
+  } else {
+    const cls = endFuel < 0 ? 'bad' : (endFuel > 15 ? 'good' : '');
+    summaryEl.innerHTML = '<div class="summary-grid">' +
+      '<div class="sum-item"><div class="sum-label">Общий пробег</div><div class="sum-val">' + fmt(totalDist,0) + ' км</div></div>' +
+      '<div class="sum-item"><div class="sum-label">Расход</div><div class="sum-val">' + fmt(totalSpent,1) + ' л</div></div>' +
+      '<div class="sum-item"><div class="sum-label">Пробег по трассе</div><div class="sum-val">' + fmt(totalHighway,0) + ' км</div></div>' +
+      '<div class="sum-item"><div class="sum-label">Пробег по миллионнику</div><div class="sum-val">' + fmt(totalMillion,0) + ' км</div></div>' +
+      '<div class="sum-item"><div class="sum-label">Пробег по городу</div><div class="sum-val">' + fmt(totalCity,0) + ' км</div></div>' +
+      '<div class="sum-item"><div class="sum-label">Остаток топлива</div><div class="sum-val ' + cls + '">' + fmt(endFuel,1) + ' л</div></div>' +
+    '</div>';
+  }
+  const listEl = document.getElementById('daysList');
+  if (monthDates.length === 0) { listEl.innerHTML = ''; return; }
+  listEl.innerHTML = monthDates.slice().reverse().map(d => {
+    const r = data[d], dt = parseYmd(d);
+    const fuelCls = r._fuelEnd < 0 ? 'bad' : '';
+    const odoCls = r._isManualOdo ? 'corrected' : '';
+    const fuelStartCls = r._isManualFuel ? 'corrected' : '';
+    return '<div class="day-card" data-date="' + d + '">' +
+      '<div class="day-head"><div class="day-date">' + dt.getDate() + ' ' + MONTHS_GEN[dt.getMonth()] + ', ' + WEEKDAYS[dt.getDay()] + '</div>' +
+      '<button class="day-del-btn" data-del="' + d + '">🗑</button></div>' +
+      '<div class="day-row"><span class="lbl">Одометр нач./кон.</span><span class="val ' + odoCls + '">' + fmt(r._odoStart,0) + ' / ' + fmt(r._odoEnd,0) + ' км' + (r._isManualOdo ? '<span class="manual-badge">правка</span>' : '') + '</span></div>' +
+      '<div class="day-row"><span class="lbl">Топливо нач./кон.</span><span class="val ' + fuelStartCls + '">' + fmt(r._fuelStart) + ' / ' + fmt(r._fuelEnd) + ' л' + (r._isManualFuel ? '<span class="manual-badge">правка</span>' : '') + '</span></div>' +
+      '<div class="day-row"><span class="lbl">Пробег за день</span><span class="val">' + fmt(r._distance,0) + ' км</span></div>' +
+      '<div class="day-row"><span class="lbl">В т.ч. трасса</span><span class="val">' + fmt(r._highway,0) + ' км</span></div>' +
+      '<div class="day-row"><span class="lbl">В т.ч. миллионник</span><span class="val">' + fmt(r._million,0) + ' км</span></div>' +
+      '<div class="day-row"><span class="lbl">В т.ч. город</span><span class="val">' + fmt(r._city,0) + ' км</span></div>' +
+      '<div class="day-row"><span class="lbl">Расход</span><span class="val">' + fmt(r._spent) + ' л</span></div></div>';
+  }).join('');
+}
+
+document.getElementById('daysList').addEventListener('click', function(e) {
+  const delBtn = e.target.closest('.day-del-btn');
+  if (delBtn) { e.preventDefault(); e.stopPropagation(); quickDelete(delBtn.getAttribute('data-del')); return; }
+  const card = e.target.closest('.day-card');
+  if (card) openEditor(card.getAttribute('data-date'));
+});
+
+function showConfirm(title, text, onYes) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmText').textContent = text;
+  document.getElementById('confirmOverlay').classList.add('show');
+  document.getElementById('confirmYes').onclick = () => { document.getElementById('confirmOverlay').classList.remove('show'); onYes(); };
+  document.getElementById('confirmNo').onclick = () => document.getElementById('confirmOverlay').classList.remove('show');
+}
+function quickDelete(dateStr) {
+  if (!data[dateStr]) return;
+  const dt = parseYmd(dateStr);
+  const label = dt.getDate() + ' ' + MONTHS_GEN[dt.getMonth()];
+  showConfirm('Удалить запись?', 'Запись за ' + label + ' будет удалена.', () => {
+    delete data[dateStr]; save(); render(); showToast('Запись удалена'); haptic('heavy');
+  });
+}
+function defaultDate() {
+  const today = new Date(), y = cursor.getFullYear(), m = cursor.getMonth();
+  let c = (today.getFullYear() === y && today.getMonth() === m) ? ymd(today) : y + '-' + String(m+1).padStart(2,'0') + '-01';
+  if (data[c]) { const dt = parseYmd(c); let i = 0; while (data[ymd(dt)] && i < 400) { dt.setDate(dt.getDate()+1); i++; } c = ymd(dt); }
+  return c;
+}
+
+// ============================================================
+// Редактор
+// ============================================================
+function openEditor(dateStr) {
+  const isNew = !dateStr || !data[dateStr];
+  editingDate = isNew ? null : dateStr;
+  const editDate = dateStr || defaultDate();
+  const r = data[editDate] || {};
+  const allDates = Object.keys(data).sort();
+  const isEarliest = isNew ? (allDates.length === 0 || editDate < allDates[0]) : (allDates[0] === editDate);
+  const prevDate = prevDateBefore(editDate);
+  const prev = prevDate ? data[prevDate] : null;
+  const autoOdoStart = prev ? prev._odoEnd : null;
+  const autoFuelStart = prev ? prev._fuelEnd : null;
+  document.getElementById('modalTitle').textContent = isNew ? 'Новый день' : 'Редактировать';
+  document.getElementById('btnDelete').style.display = isNew ? 'none' : 'flex';
+  function v(key, fb) { return (r[key] !== undefined && r[key] !== null && r[key] !== '') ? r[key] : (fb !== undefined ? fb : ''); }
+  let html = '<div class="field"><label>Дата</label><input type="date" id="f_date" value="' + editDate + '"></div>';
+  html += '<div class="section-title">Показатели на начало дня</div>';
+  if (isEarliest) {
+    html += '<div class="row2"><div class="field"><label>Одометр, км</label><input type="number" id="f_odoStart" value="' + (isNew ? '' : v('odoStart')) + '"></div>';
+    html += '<div class="field"><label>Топливо, л</label><input type="number" id="f_fuelStart" value="' + (isNew ? '' : v('fuelStart')) + '"></div></div>';
+    html += '<div class="field-hint" style="margin:-6px 0 12px 2px;">Базовая точка отсчёта.</div>';
+  } else {
+    const mOdo = !!r.odoStartManual, mFuel = !!r.fuelStartManual;
+    const aOdo = autoOdoStart !== null ? String(autoOdoStart) : '', aFuel = autoFuelStart !== null ? String(autoFuelStart) : '';
+    const sOdo = mOdo ? num(r.odoStart) : aOdo, sFuel = mFuel ? num(r.fuelStart) : aFuel;
+    html += '<div class="row2">';
+    html += '<div class="field field-with-reset"><label id="odoLabel">Одометр, км' + (mOdo ? ' (правка)' : ' (авто)') + '</label>';
+    html += '<input type="number" id="f_odoStart" value="' + sOdo + '" data-auto="' + aOdo + '" data-manual="' + (mOdo ? '1' : '0') + '"' + (mOdo ? ' class="manual"' : '') + '>';
+    html += '<button type="button" class="reset-btn" id="f_odoReset" style="display:' + (mOdo ? 'block' : 'none') + ';">↺</button></div>';
+    html += '<div class="field field-with-reset"><label id="fuelLabel">Топливо, л' + (mFuel ? ' (правка)' : ' (авто)') + '</label>';
+    html += '<input type="number" id="f_fuelStart" value="' + sFuel + '" data-auto="' + aFuel + '" data-manual="' + (mFuel ? '1' : '0') + '"' + (mFuel ? ' class="manual"' : '') + '>';
+    html += '<button type="button" class="reset-btn" id="f_fuelReset" style="display:' + (mFuel ? 'block' : 'none') + ';">↺</button></div></div>';
+    html += '<div class="field-hint" style="margin:-6px 0 12px 2px;">Авто: одометр <b>' + (autoOdoStart !== null ? fmt(autoOdoStart,0) + ' км' : '—') + '</b>, топливо <b>' + (autoFuelStart !== null ? fmt(autoFuelStart) + ' л' : '—') + '</b>.</div>';
+  }
+  const odoEndDef = isNew ? (prev ? prev._odoEnd : '') : v('odoEnd');
+  const hNormDef = isNew ? (prev ? prev.highwayNorm : '') : v('highwayNorm');
+  const mNormDef = isNew ? (prev ? prev.millionNorm : '') : v('millionNorm');
+  const cNormDef = isNew ? (prev ? prev.cityNorm : '') : v('cityNorm');
+  html += '<div class="section-title">Показания за день</div>';
+  html += '<div class="field"><label>Одометр на конец дня, км</label><input type="number" id="f_odoEnd" value="' + odoEndDef + '"></div>';
+  html += '<div class="field"><label>Заправлено, л</label><input type="number" id="f_fuelAdded" value="' + (isNew ? '' : v('fuelAdded')) + '"></div>';
+  html += '<div class="section-title">Трасса</div><div class="row2">';
+  html += '<div class="field"><label>Пробег, км</label><input type="number" id="f_highway" value="' + (isNew ? '' : v('highway')) + '"></div>';
+  html += '<div class="field"><label>Норма</label><input type="number" id="f_highwayNorm" list="normList" value="' + hNormDef + '"></div></div>';
+  html += '<div class="section-title">Город миллионник</div><div class="row2">';
+  html += '<div class="field"><label>Пробег, км</label><input type="number" id="f_million" value="' + (isNew ? '' : v('million')) + '"></div>';
+  html += '<div class="field"><label>Норма</label><input type="number" id="f_millionNorm" list="normList" value="' + mNormDef + '"></div></div>';
+  html += '<div class="field"><label>Норма по городу</label><input type="number" id="f_cityNorm" list="normList" value="' + cNormDef + '"></div>';
+  document.getElementById('modalFields').innerHTML = html;
+  setupManualToggle('f_odoStart', 'f_odoReset', 'odoLabel', 'Одометр, км');
+  setupManualToggle('f_fuelStart', 'f_fuelReset', 'fuelLabel', 'Топливо, л');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function setupManualToggle(inputId, resetId, labelId, baseLabel) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const autoStr = input.getAttribute('data-auto');
+  if (autoStr === null) return;
+  const autoNum = autoStr === '' ? null : num(autoStr);
+  function refresh() {
+    const cur = num(input.value);
+    const isManual = autoNum === null ? true : Math.abs(cur - autoNum) > 0.0001;
+    input.classList.toggle('manual', isManual);
+    input.setAttribute('data-manual', isManual ? '1' : '0');
+    const btn = document.getElementById(resetId);
+    if (btn) btn.style.display = isManual ? 'block' : 'none';
+    const lbl = document.getElementById(labelId);
+    if (lbl) lbl.textContent = baseLabel + (isManual ? ' (правка)' : ' (авто)');
+  }
+  input.addEventListener('input', refresh);
+  const btn = document.getElementById(resetId);
+  if (btn) btn.onclick = e => { e.preventDefault(); input.value = autoNum !== null ? autoNum : ''; refresh(); };
+}
+
+function closeEditor() { document.getElementById('overlay').classList.remove('show'); editingDate = null; }
+
+function saveEditor() {
+  const newDate = document.getElementById('f_date').value;
+  if (!newDate) { showToast('Укажите дату'); return; }
+  const record = {
+    odoEnd: val('f_odoEnd'), fuelAdded: val('f_fuelAdded'),
+    highway: val('f_highway'), highwayNorm: val('f_highwayNorm'),
+    million: val('f_million'), millionNorm: val('f_millionNorm'),
+    cityNorm: val('f_cityNorm')
+  };
+  const odoEl = document.getElementById('f_odoStart');
+  if (odoEl) {
+    record.odoStart = num(odoEl.value);
+    const isManual = odoEl.getAttribute('data-manual') === '1';
+    const others = Object.keys(data).filter(d => d !== editingDate && d !== newDate).sort();
+    record.odoStartManual = (!others.length || newDate <= others[0]) ? false : isManual;
+  }
+  const fuelEl = document.getElementById('f_fuelStart');
+  if (fuelEl) {
+    record.fuelStart = num(fuelEl.value);
+    const isManual = fuelEl.getAttribute('data-manual') === '1';
+    const others = Object.keys(data).filter(d => d !== editingDate && d !== newDate).sort();
+    record.fuelStartManual = (!others.length || newDate <= others[0]) ? false : isManual;
+  } else if (data[newDate]) {
+    record.fuelStart = data[newDate].fuelStart;
+    record.fuelStartManual = !!data[newDate].fuelStartManual;
+  }
+  rememberNorm('highway', record.highwayNorm);
+  rememberNorm('million', record.millionNorm);
+  rememberNorm('city', record.cityNorm);
+  if (editingDate && editingDate !== newDate) delete data[editingDate];
+  data[newDate] = record;
+  save(); refreshNormDatalist(); closeEditor(); render();
+  showToast('Сохранено: ' + newDate);
+}
+
+function deleteEditor() {
+  if (!editingDate) return;
+  const dt = parseYmd(editingDate);
+  const label = dt.getDate() + ' ' + MONTHS_GEN[dt.getMonth()];
+  const dToDel = editingDate;
+  showConfirm('Удалить?', 'Запись за ' + label + ' будет удалена.', () => {
+    delete data[dToDel]; save(); closeEditor(); render(); showToast('Удалено');
+  });
+}
+
+// ============================================================
+// Инструкция
+// ============================================================
+function detectBrowser() {
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  const isAndroid = /Android/.test(ua);
+  const isEdge = /Edg\//.test(ua);
+  const isChrome = /Chrome\//.test(ua) && !isEdge && !/OPR\//.test(ua);
+  const isFirefox = /Firefox/.test(ua);
+  const isSamsung = /SamsungBrowser/.test(ua);
+  const isOpera = /OPR\//.test(ua) || /Opera/.test(ua);
+  return { isIOS, isAndroid, isEdge, isChrome, isFirefox, isSamsung, isOpera };
+}
+
+function buildHelpContent() {
+  const b = detectBrowser();
+  let html = '';
+  if (b.isIOS) {
+    html += '<div class="help-section"><h3>🧭 Safari на iPhone / iPad <span class="help-badge">рекомендуется</span></h3>';
+    html += '<ol class="help-steps">';
+    html += '<li>Откройте эту страницу в <b>Safari</b>.</li>';
+    html += '<li>Нажмите кнопку <b>«Поделиться»</b> (квадрат со стрелкой вверх).</li>';
+    html += '<li>Прокрутите список и выберите <b>«На экран "Домой"</b>».</li>';
+    html += '<li>Нажмите <b>«Добавить»</b>.</li>';
+    html += '</ol>';
+    html += '<div class="help-tip">💡 На iPhone добавление работает <b>только в Safari</b>.</div></div>';
+    return html;
+  }
+  if (b.isAndroid) {
+    if (b.isChrome || b.isSamsung || b.isOpera) {
+      const name = b.isSamsung ? 'Samsung Internet' : (b.isOpera ? 'Opera' : 'Chrome');
+      html += '<div class="help-section"><h3>🌐 ' + name + ' <span class="help-badge">рекомендуется</span></h3>';
+      html += '<ol class="help-steps">';
+      html += '<li>Нажмите кнопку <b>меню (⋮)</b> в правом верхнем углу.</li>';
+      html += '<li>Выберите <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.</li>';
+      html += '<li>Подтвердите — иконка появится на рабочем столе.</li>';
+      html += '</ol>';
+      html += '<div class="help-tip">💡 Откроется как отдельное приложение без адресной строки.</div></div>';
+    }
+    if (b.isEdge) {
+      html += '<div class="help-section"><h3>🌊 Microsoft Edge</h3>';
+      html += '<ol class="help-steps">';
+      html += '<li>Нажмите кнопку <b>меню «…»</b> в правом нижнем углу.</li>';
+      html += '<li>Выберите <b>«Добавить на телефон»</b>.</li>';
+      html += '<li>Подтвердите — ярлык появится на рабочем столе.</li>';
+      html += '</ol>';
+      html += '<div class="help-tip">⚠️ В Edge приложение может открываться как обычная вкладка. Для полноценного приложения используйте <b>Chrome</b>.</div></div>';
+    }
+    if (b.isFirefox) {
+      html += '<div class="help-section"><h3>🦊 Firefox</h3><ol class="help-steps">';
+      html += '<li>Нажмите <b>меню (⋮)</b> в правом верхнем углу.</li>';
+      html += '<li>Выберите <b>«Установить»</b> или <b>«Добавить на главный экран»</b>.</li>';
+      html += '<li>Подтвердите — иконка появится на рабочем столе.</li>';
+      html += '</ol></div>';
+    }
+    if (!b.isChrome && !b.isSamsung && !b.isOpera && !b.isEdge && !b.isFirefox) {
+      html += '<div class="help-section"><h3>🌐 Ваш браузер</h3><ol class="help-steps">';
+      html += '<li>Откройте <b>меню браузера</b>.</li>';
+      html += '<li>Найдите пункт <b>«Добавить на главный экран»</b>.</li>';
+      html += '<li>Подтвердите — иконка появится на рабочем столе.</li>';
+      html += '</ol></div>';
+    }
+    return html;
+  }
+  html += '<div class="help-section"><h3>💻 Компьютер</h3><ol class="help-steps">';
+  html += '<li>Нажмите <b>⋮</b> или <b>…</b> в правом верхнем углу браузера.</li>';
+  html += '<li>Выберите <b>«Установить приложение»</b> или <b>«Создать ярлык»</b>.</li>';
+  html += '<li>Подтвердите — ярлык появится на рабочем столе.</li>';
+  html += '</ol>';
+  html += '<div class="help-tip">💡 Если пункта нет — используйте кнопку <b>«📲 Установить приложение»</b> выше.</div></div>';
+  return html;
+}
+
+function openHelp() {
+  document.getElementById('helpContent').innerHTML = buildHelpContent();
+  document.getElementById('helpOverlay').classList.add('show');
+}
+
+// ============================================================
+// Экспорт / импорт
+// ============================================================
+function exportData() {
+  const clean = {};
+  Object.keys(data).sort().forEach(d => {
+    const r = data[d];
+    clean[d] = { odoStart: num(r.odoStart), odoStartManual: !!r.odoStartManual, odoEnd: num(r.odoEnd),
+      fuelStart: num(r.fuelStart), fuelStartManual: !!r.fuelStartManual, fuelAdded: num(r.fuelAdded),
+      highway: num(r.highway), highwayNorm: num(r.highwayNorm), million: num(r.million),
+      millionNorm: num(r.millionNorm), cityNorm: num(r.cityNorm) };
+  });
+  const payload = { app: 'fuel-tracker', version: 6, author: 'Минаев Захар', norms: norms, records: clean };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'fuel-backup-' + ymd(new Date()) + '.json';
+  a.click();
+  showToast('Файл сохранён');
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const records = parsed && parsed.records ? parsed.records : parsed;
+      if (!records || typeof records !== 'object') throw new Error('Неверный формат');
+      const keys = Object.keys(records);
+      if (!keys.length) throw new Error('Файл пустой');
+      const doImport = () => {
+        data = {};
+        keys.forEach(d => {
+          const r = records[d];
+          data[d] = { odoStart: num(r.odoStart), odoStartManual: !!r.odoStartManual, odoEnd: num(r.odoEnd),
+            fuelStart: num(r.fuelStart), fuelStartManual: !!r.fuelStartManual, fuelAdded: num(r.fuelAdded),
+            highway: num(r.highway), highwayNorm: num(r.highwayNorm), million: num(r.million),
+            millionNorm: num(r.millionNorm), cityNorm: num(r.cityNorm) };
+        });
+        if (parsed && parsed.norms) { norms = parsed.norms; saveNorms(); }
+        save(); render(); showToast('Импортировано: ' + keys.length);
+      };
+      if (Object.keys(data).length > 0) showConfirm('Импорт', 'Заменить данные?', doImport);
+      else doImport();
+    } catch(err) { showToast('Ошибка: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// События
+// ============================================================
+document.getElementById('prevMonth').onclick = () => { cursor.setMonth(cursor.getMonth()-1); render(); };
+document.getElementById('nextMonth').onclick = () => { cursor.setMonth(cursor.getMonth()+1); render(); };
+document.getElementById('addBtn').onclick = () => openEditor(null);
+document.getElementById('btnSave').onclick = saveEditor;
+document.getElementById('btnCancel').onclick = closeEditor;
+document.getElementById('btnDelete').onclick = deleteEditor;
+document.getElementById('overlay').onclick = e => { if (e.target === e.currentTarget) closeEditor(); };
+document.getElementById('confirmOverlay').onclick = e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('show'); };
+document.getElementById('helpOverlay').onclick = e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('show'); };
+document.getElementById('btnExport').onclick = exportData;
+document.getElementById('btnImport').onclick = () => document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange = e => { const f = e.target.files[0]; if (f) importData(f); e.target.value = ''; };
+document.getElementById('helpBtn').onclick = openHelp;
+document.getElementById('helpClose').onclick = () => document.getElementById('helpOverlay').classList.remove('show');
+
+// ============================================================
+// Старт
+// ============================================================
+UpdateService.init();
+render();
+</script>
+</body>
+</html>
