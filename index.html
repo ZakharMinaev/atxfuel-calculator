@@ -13,21 +13,33 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%234A9EFF'/><stop offset='1' stop-color='%23156FE0'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23g)'/><g transform='translate(34,30)'><path d='M28 8 h60 a12 12 0 0 1 12 12 v112 a12 12 0 0 1 -12 12 h-60 a12 12 0 0 1 -12 -12 v-112 a12 12 0 0 1 12 -12 z' fill='white'/><path d='M28 8 h60 a12 12 0 0 1 12 12 v14 h-84 v-14 a12 12 0 0 1 12 -12 z' fill='%23E8F2FF'/><circle cx='58' cy='70' r='20' fill='%23248bed'/><path d='M58 58 c -6 10 -10 16 -10 22 a 10 10 0 0 0 20 0 c 0 -6 -4 -12 -10 -22 z' fill='white'/><rect x='76' y='16' width='14' height='8' rx='3' fill='%23248bed'/></g></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%234A9EFF'/><stop offset='1' stop-color='%23156FE0'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23g)'/><g transform='translate(34,30)'><path d='M28 8 h60 a12 12 0 0 1 12 12 v112 a12 12 0 0 1 -12 12 h-60 a12 12 0 0 1 -12 -12 v-112 a12 12 0 0 1 12 -12 z' fill='white'/><path d='M28 8 h60 a12 12 0 0 1 12 12 v14 h-84 v-14 a12 12 0 0 1 12 -12 z' fill='%23E8F2FF'/><circle cx='58' cy='70' r='20' fill='%23248bed'/><path d='M58 58 c -6 10 -10 16 -10 22 a 10 10 0 0 0 20 0 c 0 -6 -4 -12 -10 -22 z' fill='white'/><rect x='76' y='16' width='14' height='8' rx='3' fill='%23248bed'/></g></svg>">
 
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root {
-  --bg: var(--tg-theme-bg-color, #ffffff);
-  --secondary-bg: var(--tg-theme-secondary-bg-color, #f0f2f5);
-  --text: var(--tg-theme-text-color, #000000);
-  --hint: var(--tg-theme-hint-color, #707579);
-  --button: var(--tg-theme-button-color, #248bed);
-  --button-text: var(--tg-theme-button-text-color, #ffffff);
+  --bg: #ffffff;
+  --secondary-bg: #f0f2f5;
+  --text: #000000;
+  --hint: #707579;
+  --button: #248bed;
+  --button-text: #ffffff;
   --input-border: rgba(128,128,128,0.3);
   --danger: #e53935;
   --success: #43a047;
 }
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1c1c1e;
+    --secondary-bg: #2c2c2e;
+    --text: #ffffff;
+    --hint: #98989f;
+    --input-border: rgba(200,200,200,0.25);
+  }
+}
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--secondary-bg); color: var(--text); margin: 0; padding: 12px; padding-bottom: 40px; font-size: 15px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--secondary-bg); color: var(--text);
+  margin: 0; padding: 12px; padding-bottom: 40px; font-size: 15px;
+}
 .app { max-width: 480px; margin: 0 auto; }
 h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
 .card { background: var(--bg); border-radius: 16px; padding: 14px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
@@ -59,11 +71,12 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
 .tools { display: flex; gap: 8px; margin-top: 16px; }
 .tools button { flex: 1; padding: 11px; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--input-border); background: var(--bg); color: var(--text); }
 .tools button:active { background: var(--secondary-bg); }
-.install-btn { width: 100%; padding: 13px; margin-top: 10px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; border: none; background: var(--success); color: #fff; display: none; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 8px rgba(67,160,71,0.3); animation: pulse 2s infinite; }
-.install-btn.show { display: flex; }
-.install-btn:active { opacity: 0.85; animation: none; }
-@keyframes pulse { 0%, 100% { box-shadow: 0 2px 8px rgba(67,160,71,0.3); } 50% { box-shadow: 0 2px 16px rgba(67,160,71,0.55); } }
-.help-btn { width: 100%; padding: 12px; margin-top: 8px; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; border: 1px dashed var(--button); background: rgba(36,139,237,0.08); color: var(--button); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.help-btn {
+  width: 100%; padding: 12px; margin-top: 8px;
+  border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+  border: 1px dashed var(--button); background: rgba(36,139,237,0.08); color: var(--button);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
 .help-btn:active { background: rgba(36,139,237,0.16); }
 .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: flex-end; justify-content: center; z-index: 100; }
 .overlay.show { display: flex; }
@@ -94,62 +107,53 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
 .storage-warn { background: #fff3cd; color: #856404; padding: 10px 12px; border-radius: 10px; font-size: 12px; margin-bottom: 10px; border: 1px solid #ffeaa7; }
 .author { text-align: center; font-size: 12px; color: var(--hint); margin-top: 24px; padding: 12px 0 4px; letter-spacing: 0.3px; }
 .author b { color: var(--button); font-weight: 700; }
-.help-section { margin-bottom: 18px; }
-.help-section h3 { font-size: 14px; color: var(--button); margin: 0 0 8px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.help-steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
-.help-steps li { counter-increment: step; position: relative; padding: 10px 12px 10px 42px; font-size: 14px; line-height: 1.5; background: var(--secondary-bg); border-radius: 10px; margin-bottom: 6px; }
-.help-steps li::before { content: counter(step); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 50%; background: var(--button); color: var(--button-text); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
-.help-tip { background: rgba(36,139,237,0.08); border-left: 3px solid var(--button); padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.5; margin-top: 10px; }
-.help-tip b { color: var(--button); }
-.help-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: var(--button); color: var(--button-text); margin-left: 6px; }
+.version { text-align: center; font-size: 11px; color: var(--hint); margin-top: 4px; }
 
-/* Плашка обновления */
-.update-banner {
-  display: none;
-  background: linear-gradient(135deg, #43a047, #2e7d32);
-  color: white;
-  padding: 12px 14px;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  box-shadow: 0 4px 14px rgba(67,160,71,0.35);
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  animation: slideDown 0.35s ease;
+/* Инструкция */
+.help-section { margin-bottom: 18px; }
+.help-section h3 {
+  font-size: 14px; color: var(--button); margin: 0 0 8px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
 }
-.update-banner.show { display: flex; }
-.update-banner .update-text { flex: 1; line-height: 1.4; }
-.update-banner .update-text small { display: block; font-weight: 400; opacity: 0.85; font-size: 11px; margin-top: 2px; }
-.update-banner button {
-  background: white; color: #2e7d32; border: none;
-  padding: 8px 14px; border-radius: 8px;
-  font-size: 13px; font-weight: 700; cursor: pointer;
-  flex-shrink: 0; white-space: nowrap;
+.help-section .browser-icon {
+  display: inline-flex; width: 22px; height: 22px; border-radius: 6px;
+  background: var(--secondary-bg); align-items: center; justify-content: center;
+  font-size: 13px;
 }
-.update-banner button:active { opacity: 0.85; }
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+.help-steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
+.help-steps li {
+  counter-increment: step; position: relative;
+  padding: 10px 12px 10px 42px; font-size: 14px; line-height: 1.5;
+  background: var(--secondary-bg); border-radius: 10px; margin-bottom: 6px;
 }
-.app-version { text-align: center; font-size: 10px; color: var(--hint); margin-top: 6px; letter-spacing: 0.5px; opacity: 0.6; }
+.help-steps li::before {
+  content: counter(step); position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%);
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--button); color: var(--button-text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.help-tip {
+  background: rgba(36,139,237,0.08); border-left: 3px solid var(--button);
+  padding: 10px 12px; border-radius: 8px; font-size: 13px;
+  line-height: 1.5; margin-top: 10px; color: var(--text);
+}
+.help-tip b { color: var(--button); }
+.help-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 6px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
+  background: var(--button); color: var(--button-text);
+  margin-left: 6px; vertical-align: middle;
+}
+.help-badge.gray { background: var(--hint); }
 </style>
 </head>
 <body>
 <div class="app">
   <h1>⛽ Калькулятор остатка топлива</h1>
 
-  <!-- Плашка обновления -->
-  <div class="update-banner" id="updateBanner">
-    <div class="update-text">
-      🎉 Доступно обновление
-      <small id="updateVersionLabel">Новая версия готова к установке</small>
-    </div>
-    <button id="updateBtn">Обновить</button>
-  </div>
-
-  <div id="storageWarn" class="storage-warn" style="display:none;">⚠ Хранилище недоступно.</div>
+  <div id="storageWarn" class="storage-warn" style="display:none;">⚠ Хранилище недоступно. Данные не сохранятся после закрытия вкладки. Используйте экспорт для резервной копии.</div>
 
   <div class="month-nav">
     <button id="prevMonth">‹</button>
@@ -157,7 +161,7 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
     <button id="nextMonth">›</button>
   </div>
 
-  <div class="card" id="summaryCard"></div>
+  <div class="card" id="summaryCard"><div class="empty">Записей за этот месяц пока нет</div></div>
   <button class="add-btn" id="addBtn">+ Добавить день</button>
   <div class="days-list" id="daysList" style="margin-top:10px;"></div>
 
@@ -167,11 +171,10 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
   </div>
   <input type="file" id="fileInput" accept=".json" style="display:none;">
 
-  <button class="install-btn" id="installBtn">📲 Установить приложение</button>
-  <button class="help-btn" id="helpBtn">❓ Как добавить на рабочий стол</button>
+  <button class="help-btn" id="helpBtn">📲 Как добавить на рабочий стол</button>
 
   <div class="author">Разработчик · <b>Минаев Захар</b></div>
-  <div class="app-version" id="appVersion">v —</div>
+  <div class="version" id="versionLabel">v 2026-09-25.1</div>
 </div>
 
 <!-- Редактор дня -->
@@ -215,177 +218,56 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
 
 <script>
 // ============================================================
-// ВЕРСИЯ ПРИЛОЖЕНИЯ
-// Меняйте это число при каждом обновлении!
+// Совместимость (Telegram удалён — работаем как обычный сайт)
 // ============================================================
-const APP_VERSION = '2026-09-14.1';
+const tg = null;
+function haptic() {}
 
-// ============================================================
-// СЕРВИС ОБНОВЛЕНИЯ
-// ============================================================
-const UpdateService = (function() {
-  let swRegistration = null;
-  let updateBanner = null;
-  let updateBtn = null;
-  let updateVersionLabel = null;
-  let updateAvailable = false;
-
-  function init() {
-    updateBanner = document.getElementById('updateBanner');
-    updateBtn = document.getElementById('updateBtn');
-    updateVersionLabel = document.getElementById('updateVersionLabel');
-    const vEl = document.getElementById('appVersion');
-    if (vEl) vEl.textContent = 'v ' + APP_VERSION;
-
-    if (!('serviceWorker' in navigator)) return;
-    registerSW();
-
-    navigator.serviceWorker.addEventListener('message', function(event) {
-      if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
-        showUpdateBanner(event.data.version);
-      }
-    });
-
-    updateBtn.addEventListener('click', applyUpdate);
-  }
-
-  function registerSW() {
-    const swCode = `
-      const SW_VERSION = '${APP_VERSION}';
-      self.addEventListener('install', function(event) {
-        self.skipWaiting();
-      });
-      self.addEventListener('activate', function(event) {
-        event.waitUntil(self.clients.claim());
-      });
-      self.addEventListener('fetch', function(event) {});
-    `;
-    const swBlob = new Blob([swCode], { type: 'application/javascript' });
-    const swUrl = URL.createObjectURL(swBlob);
-
-    navigator.serviceWorker.register(swUrl, { scope: './' })
-      .then(function(reg) {
-        swRegistration = reg;
-        // Проверяем обновления при возврате на страницу
-        window.addEventListener('focus', function() {
-          reg.update().catch(function(){});
-        });
-      })
-      .catch(function(err) {
-        console.warn('[Update] SW не зарегистрирован:', err.message);
-      });
-
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', function() {
-      if (refreshing) return;
-      refreshing = true;
-      window.location.reload();
-    });
-  }
-
-  function showUpdateBanner(version) {
-    if (updateAvailable) return;
-    updateAvailable = true;
-    updateVersionLabel.textContent = 'Версия ' + (version || APP_VERSION);
-    updateBanner.classList.add('show');
-  }
-
-  function applyUpdate() {
-    updateBtn.disabled = true;
-    updateBtn.textContent = 'Обновляем...';
-    if (swRegistration && swRegistration.waiting) {
-      swRegistration.waiting.postMessage({ type: 'SKIP_WAITING' });
-    }
-    setTimeout(function() {
-      window.location.reload();
-    }, 800);
-  }
-
-  return { init: init, version: APP_VERSION };
-})();
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
 
 // ============================================================
-// PWA: Манифест
-// ============================================================
-(function initPWA(){
-  const iconSvg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%234A9EFF'/><stop offset='1' stop-color='%23156FE0'/></linearGradient></defs><rect width='192' height='192' rx='42' fill='url(%23g)'/><g transform='translate(34,30)'><path d='M28 8 h60 a12 12 0 0 1 12 12 v112 a12 12 0 0 1 -12 12 h-60 a12 12 0 0 1 -12 -12 v-112 a12 12 0 0 1 12 -12 z' fill='white'/><path d='M28 8 h60 a12 12 0 0 1 12 12 v14 h-84 v-14 a12 12 0 0 1 12 -12 z' fill='%23E8F2FF'/><circle cx='58' cy='70' r='20' fill='%23248bed'/><path d='M58 58 c -6 10 -10 16 -10 22 a 10 10 0 0 0 20 0 c 0 -6 -4 -12 -10 -22 z' fill='white'/><rect x='76' y='16' width='14' height='8' rx='3' fill='%23248bed'/></g></svg>";
-  const iconDataUri = "data:image/svg+xml;utf8," + iconSvg;
-  try {
-    const manifest = {
-      name: "Калькулятор остатка топлива",
-      short_name: "Топливо",
-      start_url: ".",
-      display: "standalone",
-      background_color: "#f0f2f5",
-      theme_color: "#248bed",
-      lang: "ru",
-      icons: [
-        { src: iconDataUri, sizes: "192x192", type: "image/svg+xml", purpose: "any" },
-        { src: iconDataUri, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
-      ]
-    };
-    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = URL.createObjectURL(blob);
-    document.head.appendChild(link);
-  } catch(e) {}
-})();
-
-// ============================================================
-// Своя кнопка установки
-// ============================================================
-(function initInstallButton(){
-  const installBtn = document.getElementById('installBtn');
-  let deferredPrompt = null;
-  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
-  window.addEventListener('beforeinstallprompt', function(e) {
-    e.preventDefault();
-    deferredPrompt = e;
-    installBtn.classList.add('show');
-  });
-  installBtn.addEventListener('click', function() {
-    if (!deferredPrompt) { openHelp(); return; }
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function(choice) {
-      if (choice.outcome === 'accepted') {
-        showToast('Приложение установлено ✓');
-        installBtn.classList.remove('show');
-      }
-      deferredPrompt = null;
-    });
-  });
-  window.addEventListener('appinstalled', function() {
-    installBtn.classList.remove('show');
-    deferredPrompt = null;
-  });
-})();
-
-// ============================================================
-// Telegram
-// ============================================================
-const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
-if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
-function haptic(s) { if (tg && tg.HapticFeedback) { try { tg.HapticFeedback.impactOccurred(s || 'light'); } catch(e){} } }
-function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(showToast._t); showToast._t = setTimeout(()=>t.classList.remove('show'), 2200); }
-
-// ============================================================
-// Хранилище
+// Хранилище (с проверкой доступности)
 // ============================================================
 const STORAGE_KEY = 'fuel_tracker_v5';
 const NORMS_KEY = 'fuel_norms_v1';
 let data = {};
 let norms = { highway: [], million: [], city: [] };
+let storageOK = true;
 
 try {
-  const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('fuel_tracker_v4') || localStorage.getItem('fuel_tracker_v3') || localStorage.getItem('fuel_tracker_v2');
-  if (raw) data = JSON.parse(raw);
-  const rawNorms = localStorage.getItem(NORMS_KEY);
-  if (rawNorms) norms = JSON.parse(rawNorms);
-} catch(e) {}
+  localStorage.setItem('__t', '1');
+  localStorage.removeItem('__t');
+} catch (e) {
+  storageOK = false;
+  document.getElementById('storageWarn').style.display = 'block';
+}
 
-function save() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){} }
-function saveNorms() { try { localStorage.setItem(NORMS_KEY, JSON.stringify(norms)); } catch(e){} }
+try {
+  if (storageOK) {
+    const raw = localStorage.getItem(STORAGE_KEY)
+      || localStorage.getItem('fuel_tracker_v4')
+      || localStorage.getItem('fuel_tracker_v3')
+      || localStorage.getItem('fuel_tracker_v2');
+    if (raw) data = JSON.parse(raw);
+    const rawNorms = localStorage.getItem(NORMS_KEY);
+    if (rawNorms) norms = JSON.parse(rawNorms);
+  }
+} catch (e) {}
+
+function save() {
+  if (!storageOK) return;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+}
+function saveNorms() {
+  if (!storageOK) return;
+  try { localStorage.setItem(NORMS_KEY, JSON.stringify(norms)); } catch (e) {}
+}
 
 // ============================================================
 // Утилиты
@@ -401,6 +283,7 @@ function parseYmd(s) { const p = s.split('-').map(Number); return new Date(p[0],
 function num(v) { const n = parseFloat(v); return isNaN(n) ? 0 : n; }
 function val(id) { const el = document.getElementById(id); return el ? num(el.value) : 0; }
 function fmt(n, d) { return Number(n || 0).toFixed(d === undefined ? 2 : d); }
+
 function rememberNorm(kind, value) {
   const v = num(value);
   if (!v || v <= 0) return;
@@ -511,6 +394,9 @@ document.getElementById('daysList').addEventListener('click', function(e) {
   if (card) openEditor(card.getAttribute('data-date'));
 });
 
+// ============================================================
+// Модалки
+// ============================================================
 function showConfirm(title, text, onYes) {
   document.getElementById('confirmTitle').textContent = title;
   document.getElementById('confirmText').textContent = text;
@@ -518,14 +404,16 @@ function showConfirm(title, text, onYes) {
   document.getElementById('confirmYes').onclick = () => { document.getElementById('confirmOverlay').classList.remove('show'); onYes(); };
   document.getElementById('confirmNo').onclick = () => document.getElementById('confirmOverlay').classList.remove('show');
 }
+
 function quickDelete(dateStr) {
   if (!data[dateStr]) return;
   const dt = parseYmd(dateStr);
   const label = dt.getDate() + ' ' + MONTHS_GEN[dt.getMonth()];
   showConfirm('Удалить запись?', 'Запись за ' + label + ' будет удалена.', () => {
-    delete data[dateStr]; save(); render(); showToast('Запись удалена'); haptic('heavy');
+    delete data[dateStr]; save(); render(); showToast('Запись удалена');
   });
 }
+
 function defaultDate() {
   const today = new Date(), y = cursor.getFullYear(), m = cursor.getMonth();
   let c = (today.getFullYear() === y && today.getMonth() === m) ? ymd(today) : y + '-' + String(m+1).padStart(2,'0') + '-01';
@@ -547,267 +435,3 @@ function openEditor(dateStr) {
   const prev = prevDate ? data[prevDate] : null;
   const autoOdoStart = prev ? prev._odoEnd : null;
   const autoFuelStart = prev ? prev._fuelEnd : null;
-  document.getElementById('modalTitle').textContent = isNew ? 'Новый день' : 'Редактировать';
-  document.getElementById('btnDelete').style.display = isNew ? 'none' : 'flex';
-  function v(key, fb) { return (r[key] !== undefined && r[key] !== null && r[key] !== '') ? r[key] : (fb !== undefined ? fb : ''); }
-  let html = '<div class="field"><label>Дата</label><input type="date" id="f_date" value="' + editDate + '"></div>';
-  html += '<div class="section-title">Показатели на начало дня</div>';
-  if (isEarliest) {
-    html += '<div class="row2"><div class="field"><label>Одометр, км</label><input type="number" id="f_odoStart" value="' + (isNew ? '' : v('odoStart')) + '"></div>';
-    html += '<div class="field"><label>Топливо, л</label><input type="number" id="f_fuelStart" value="' + (isNew ? '' : v('fuelStart')) + '"></div></div>';
-    html += '<div class="field-hint" style="margin:-6px 0 12px 2px;">Базовая точка отсчёта.</div>';
-  } else {
-    const mOdo = !!r.odoStartManual, mFuel = !!r.fuelStartManual;
-    const aOdo = autoOdoStart !== null ? String(autoOdoStart) : '', aFuel = autoFuelStart !== null ? String(autoFuelStart) : '';
-    const sOdo = mOdo ? num(r.odoStart) : aOdo, sFuel = mFuel ? num(r.fuelStart) : aFuel;
-    html += '<div class="row2">';
-    html += '<div class="field field-with-reset"><label id="odoLabel">Одометр, км' + (mOdo ? ' (правка)' : ' (авто)') + '</label>';
-    html += '<input type="number" id="f_odoStart" value="' + sOdo + '" data-auto="' + aOdo + '" data-manual="' + (mOdo ? '1' : '0') + '"' + (mOdo ? ' class="manual"' : '') + '>';
-    html += '<button type="button" class="reset-btn" id="f_odoReset" style="display:' + (mOdo ? 'block' : 'none') + ';">↺</button></div>';
-    html += '<div class="field field-with-reset"><label id="fuelLabel">Топливо, л' + (mFuel ? ' (правка)' : ' (авто)') + '</label>';
-    html += '<input type="number" id="f_fuelStart" value="' + sFuel + '" data-auto="' + aFuel + '" data-manual="' + (mFuel ? '1' : '0') + '"' + (mFuel ? ' class="manual"' : '') + '>';
-    html += '<button type="button" class="reset-btn" id="f_fuelReset" style="display:' + (mFuel ? 'block' : 'none') + ';">↺</button></div></div>';
-    html += '<div class="field-hint" style="margin:-6px 0 12px 2px;">Авто: одометр <b>' + (autoOdoStart !== null ? fmt(autoOdoStart,0) + ' км' : '—') + '</b>, топливо <b>' + (autoFuelStart !== null ? fmt(autoFuelStart) + ' л' : '—') + '</b>.</div>';
-  }
-  const odoEndDef = isNew ? (prev ? prev._odoEnd : '') : v('odoEnd');
-  const hNormDef = isNew ? (prev ? prev.highwayNorm : '') : v('highwayNorm');
-  const mNormDef = isNew ? (prev ? prev.millionNorm : '') : v('millionNorm');
-  const cNormDef = isNew ? (prev ? prev.cityNorm : '') : v('cityNorm');
-  html += '<div class="section-title">Показания за день</div>';
-  html += '<div class="field"><label>Одометр на конец дня, км</label><input type="number" id="f_odoEnd" value="' + odoEndDef + '"></div>';
-  html += '<div class="field"><label>Заправлено, л</label><input type="number" id="f_fuelAdded" value="' + (isNew ? '' : v('fuelAdded')) + '"></div>';
-  html += '<div class="section-title">Трасса</div><div class="row2">';
-  html += '<div class="field"><label>Пробег, км</label><input type="number" id="f_highway" value="' + (isNew ? '' : v('highway')) + '"></div>';
-  html += '<div class="field"><label>Норма</label><input type="number" id="f_highwayNorm" list="normList" value="' + hNormDef + '"></div></div>';
-  html += '<div class="section-title">Город миллионник</div><div class="row2">';
-  html += '<div class="field"><label>Пробег, км</label><input type="number" id="f_million" value="' + (isNew ? '' : v('million')) + '"></div>';
-  html += '<div class="field"><label>Норма</label><input type="number" id="f_millionNorm" list="normList" value="' + mNormDef + '"></div></div>';
-  html += '<div class="field"><label>Норма по городу</label><input type="number" id="f_cityNorm" list="normList" value="' + cNormDef + '"></div>';
-  document.getElementById('modalFields').innerHTML = html;
-  setupManualToggle('f_odoStart', 'f_odoReset', 'odoLabel', 'Одометр, км');
-  setupManualToggle('f_fuelStart', 'f_fuelReset', 'fuelLabel', 'Топливо, л');
-  document.getElementById('overlay').classList.add('show');
-}
-
-function setupManualToggle(inputId, resetId, labelId, baseLabel) {
-  const input = document.getElementById(inputId);
-  if (!input) return;
-  const autoStr = input.getAttribute('data-auto');
-  if (autoStr === null) return;
-  const autoNum = autoStr === '' ? null : num(autoStr);
-  function refresh() {
-    const cur = num(input.value);
-    const isManual = autoNum === null ? true : Math.abs(cur - autoNum) > 0.0001;
-    input.classList.toggle('manual', isManual);
-    input.setAttribute('data-manual', isManual ? '1' : '0');
-    const btn = document.getElementById(resetId);
-    if (btn) btn.style.display = isManual ? 'block' : 'none';
-    const lbl = document.getElementById(labelId);
-    if (lbl) lbl.textContent = baseLabel + (isManual ? ' (правка)' : ' (авто)');
-  }
-  input.addEventListener('input', refresh);
-  const btn = document.getElementById(resetId);
-  if (btn) btn.onclick = e => { e.preventDefault(); input.value = autoNum !== null ? autoNum : ''; refresh(); };
-}
-
-function closeEditor() { document.getElementById('overlay').classList.remove('show'); editingDate = null; }
-
-function saveEditor() {
-  const newDate = document.getElementById('f_date').value;
-  if (!newDate) { showToast('Укажите дату'); return; }
-  const record = {
-    odoEnd: val('f_odoEnd'), fuelAdded: val('f_fuelAdded'),
-    highway: val('f_highway'), highwayNorm: val('f_highwayNorm'),
-    million: val('f_million'), millionNorm: val('f_millionNorm'),
-    cityNorm: val('f_cityNorm')
-  };
-  const odoEl = document.getElementById('f_odoStart');
-  if (odoEl) {
-    record.odoStart = num(odoEl.value);
-    const isManual = odoEl.getAttribute('data-manual') === '1';
-    const others = Object.keys(data).filter(d => d !== editingDate && d !== newDate).sort();
-    record.odoStartManual = (!others.length || newDate <= others[0]) ? false : isManual;
-  }
-  const fuelEl = document.getElementById('f_fuelStart');
-  if (fuelEl) {
-    record.fuelStart = num(fuelEl.value);
-    const isManual = fuelEl.getAttribute('data-manual') === '1';
-    const others = Object.keys(data).filter(d => d !== editingDate && d !== newDate).sort();
-    record.fuelStartManual = (!others.length || newDate <= others[0]) ? false : isManual;
-  } else if (data[newDate]) {
-    record.fuelStart = data[newDate].fuelStart;
-    record.fuelStartManual = !!data[newDate].fuelStartManual;
-  }
-  rememberNorm('highway', record.highwayNorm);
-  rememberNorm('million', record.millionNorm);
-  rememberNorm('city', record.cityNorm);
-  if (editingDate && editingDate !== newDate) delete data[editingDate];
-  data[newDate] = record;
-  save(); refreshNormDatalist(); closeEditor(); render();
-  showToast('Сохранено: ' + newDate);
-}
-
-function deleteEditor() {
-  if (!editingDate) return;
-  const dt = parseYmd(editingDate);
-  const label = dt.getDate() + ' ' + MONTHS_GEN[dt.getMonth()];
-  const dToDel = editingDate;
-  showConfirm('Удалить?', 'Запись за ' + label + ' будет удалена.', () => {
-    delete data[dToDel]; save(); closeEditor(); render(); showToast('Удалено');
-  });
-}
-
-// ============================================================
-// Инструкция
-// ============================================================
-function detectBrowser() {
-  const ua = navigator.userAgent;
-  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-  const isAndroid = /Android/.test(ua);
-  const isEdge = /Edg\//.test(ua);
-  const isChrome = /Chrome\//.test(ua) && !isEdge && !/OPR\//.test(ua);
-  const isFirefox = /Firefox/.test(ua);
-  const isSamsung = /SamsungBrowser/.test(ua);
-  const isOpera = /OPR\//.test(ua) || /Opera/.test(ua);
-  return { isIOS, isAndroid, isEdge, isChrome, isFirefox, isSamsung, isOpera };
-}
-
-function buildHelpContent() {
-  const b = detectBrowser();
-  let html = '';
-  if (b.isIOS) {
-    html += '<div class="help-section"><h3>🧭 Safari на iPhone / iPad <span class="help-badge">рекомендуется</span></h3>';
-    html += '<ol class="help-steps">';
-    html += '<li>Откройте эту страницу в <b>Safari</b>.</li>';
-    html += '<li>Нажмите кнопку <b>«Поделиться»</b> (квадрат со стрелкой вверх).</li>';
-    html += '<li>Прокрутите список и выберите <b>«На экран "Домой"</b>».</li>';
-    html += '<li>Нажмите <b>«Добавить»</b>.</li>';
-    html += '</ol>';
-    html += '<div class="help-tip">💡 На iPhone добавление работает <b>только в Safari</b>.</div></div>';
-    return html;
-  }
-  if (b.isAndroid) {
-    if (b.isChrome || b.isSamsung || b.isOpera) {
-      const name = b.isSamsung ? 'Samsung Internet' : (b.isOpera ? 'Opera' : 'Chrome');
-      html += '<div class="help-section"><h3>🌐 ' + name + ' <span class="help-badge">рекомендуется</span></h3>';
-      html += '<ol class="help-steps">';
-      html += '<li>Нажмите кнопку <b>меню (⋮)</b> в правом верхнем углу.</li>';
-      html += '<li>Выберите <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.</li>';
-      html += '<li>Подтвердите — иконка появится на рабочем столе.</li>';
-      html += '</ol>';
-      html += '<div class="help-tip">💡 Откроется как отдельное приложение без адресной строки.</div></div>';
-    }
-    if (b.isEdge) {
-      html += '<div class="help-section"><h3>🌊 Microsoft Edge</h3>';
-      html += '<ol class="help-steps">';
-      html += '<li>Нажмите кнопку <b>меню «…»</b> в правом нижнем углу.</li>';
-      html += '<li>Выберите <b>«Добавить на телефон»</b>.</li>';
-      html += '<li>Подтвердите — ярлык появится на рабочем столе.</li>';
-      html += '</ol>';
-      html += '<div class="help-tip">⚠️ В Edge приложение может открываться как обычная вкладка. Для полноценного приложения используйте <b>Chrome</b>.</div></div>';
-    }
-    if (b.isFirefox) {
-      html += '<div class="help-section"><h3>🦊 Firefox</h3><ol class="help-steps">';
-      html += '<li>Нажмите <b>меню (⋮)</b> в правом верхнем углу.</li>';
-      html += '<li>Выберите <b>«Установить»</b> или <b>«Добавить на главный экран»</b>.</li>';
-      html += '<li>Подтвердите — иконка появится на рабочем столе.</li>';
-      html += '</ol></div>';
-    }
-    if (!b.isChrome && !b.isSamsung && !b.isOpera && !b.isEdge && !b.isFirefox) {
-      html += '<div class="help-section"><h3>🌐 Ваш браузер</h3><ol class="help-steps">';
-      html += '<li>Откройте <b>меню браузера</b>.</li>';
-      html += '<li>Найдите пункт <b>«Добавить на главный экран»</b>.</li>';
-      html += '<li>Подтвердите — иконка появится на рабочем столе.</li>';
-      html += '</ol></div>';
-    }
-    return html;
-  }
-  html += '<div class="help-section"><h3>💻 Компьютер</h3><ol class="help-steps">';
-  html += '<li>Нажмите <b>⋮</b> или <b>…</b> в правом верхнем углу браузера.</li>';
-  html += '<li>Выберите <b>«Установить приложение»</b> или <b>«Создать ярлык»</b>.</li>';
-  html += '<li>Подтвердите — ярлык появится на рабочем столе.</li>';
-  html += '</ol>';
-  html += '<div class="help-tip">💡 Если пункта нет — используйте кнопку <b>«📲 Установить приложение»</b> выше.</div></div>';
-  return html;
-}
-
-function openHelp() {
-  document.getElementById('helpContent').innerHTML = buildHelpContent();
-  document.getElementById('helpOverlay').classList.add('show');
-}
-
-// ============================================================
-// Экспорт / импорт
-// ============================================================
-function exportData() {
-  const clean = {};
-  Object.keys(data).sort().forEach(d => {
-    const r = data[d];
-    clean[d] = { odoStart: num(r.odoStart), odoStartManual: !!r.odoStartManual, odoEnd: num(r.odoEnd),
-      fuelStart: num(r.fuelStart), fuelStartManual: !!r.fuelStartManual, fuelAdded: num(r.fuelAdded),
-      highway: num(r.highway), highwayNorm: num(r.highwayNorm), million: num(r.million),
-      millionNorm: num(r.millionNorm), cityNorm: num(r.cityNorm) };
-  });
-  const payload = { app: 'fuel-tracker', version: 6, author: 'Минаев Захар', norms: norms, records: clean };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'fuel-backup-' + ymd(new Date()) + '.json';
-  a.click();
-  showToast('Файл сохранён');
-}
-
-function importData(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const parsed = JSON.parse(e.target.result);
-      const records = parsed && parsed.records ? parsed.records : parsed;
-      if (!records || typeof records !== 'object') throw new Error('Неверный формат');
-      const keys = Object.keys(records);
-      if (!keys.length) throw new Error('Файл пустой');
-      const doImport = () => {
-        data = {};
-        keys.forEach(d => {
-          const r = records[d];
-          data[d] = { odoStart: num(r.odoStart), odoStartManual: !!r.odoStartManual, odoEnd: num(r.odoEnd),
-            fuelStart: num(r.fuelStart), fuelStartManual: !!r.fuelStartManual, fuelAdded: num(r.fuelAdded),
-            highway: num(r.highway), highwayNorm: num(r.highwayNorm), million: num(r.million),
-            millionNorm: num(r.millionNorm), cityNorm: num(r.cityNorm) };
-        });
-        if (parsed && parsed.norms) { norms = parsed.norms; saveNorms(); }
-        save(); render(); showToast('Импортировано: ' + keys.length);
-      };
-      if (Object.keys(data).length > 0) showConfirm('Импорт', 'Заменить данные?', doImport);
-      else doImport();
-    } catch(err) { showToast('Ошибка: ' + err.message); }
-  };
-  reader.readAsText(file);
-}
-
-// ============================================================
-// События
-// ============================================================
-document.getElementById('prevMonth').onclick = () => { cursor.setMonth(cursor.getMonth()-1); render(); };
-document.getElementById('nextMonth').onclick = () => { cursor.setMonth(cursor.getMonth()+1); render(); };
-document.getElementById('addBtn').onclick = () => openEditor(null);
-document.getElementById('btnSave').onclick = saveEditor;
-document.getElementById('btnCancel').onclick = closeEditor;
-document.getElementById('btnDelete').onclick = deleteEditor;
-document.getElementById('overlay').onclick = e => { if (e.target === e.currentTarget) closeEditor(); };
-document.getElementById('confirmOverlay').onclick = e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('show'); };
-document.getElementById('helpOverlay').onclick = e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('show'); };
-document.getElementById('btnExport').onclick = exportData;
-document.getElementById('btnImport').onclick = () => document.getElementById('fileInput').click();
-document.getElementById('fileInput').onchange = e => { const f = e.target.files[0]; if (f) importData(f); e.target.value = ''; };
-document.getElementById('helpBtn').onclick = openHelp;
-document.getElementById('helpClose').onclick = () => document.getElementById('helpOverlay').classList.remove('show');
-
-// ============================================================
-// Старт
-// ============================================================
-UpdateService.init();
-render();
-</script>
-</body>
-</html>
