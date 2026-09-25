@@ -109,43 +109,15 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
 .author b { color: var(--button); font-weight: 700; }
 .version { text-align: center; font-size: 11px; color: var(--hint); margin-top: 4px; }
 
-/* Инструкция */
 .help-section { margin-bottom: 18px; }
-.help-section h3 {
-  font-size: 14px; color: var(--button); margin: 0 0 8px; font-weight: 700;
-  display: flex; align-items: center; gap: 8px;
-}
-.help-section .browser-icon {
-  display: inline-flex; width: 22px; height: 22px; border-radius: 6px;
-  background: var(--secondary-bg); align-items: center; justify-content: center;
-  font-size: 13px;
-}
+.help-section h3 { font-size: 14px; color: var(--button); margin: 0 0 8px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.help-section .browser-icon { display: inline-flex; width: 22px; height: 22px; border-radius: 6px; background: var(--secondary-bg); align-items: center; justify-content: center; font-size: 13px; }
 .help-steps { list-style: none; padding: 0; margin: 0; counter-reset: step; }
-.help-steps li {
-  counter-increment: step; position: relative;
-  padding: 10px 12px 10px 42px; font-size: 14px; line-height: 1.5;
-  background: var(--secondary-bg); border-radius: 10px; margin-bottom: 6px;
-}
-.help-steps li::before {
-  content: counter(step); position: absolute; left: 12px; top: 50%;
-  transform: translateY(-50%);
-  width: 22px; height: 22px; border-radius: 50%;
-  background: var(--button); color: var(--button-text);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
-}
-.help-tip {
-  background: rgba(36,139,237,0.08); border-left: 3px solid var(--button);
-  padding: 10px 12px; border-radius: 8px; font-size: 13px;
-  line-height: 1.5; margin-top: 10px; color: var(--text);
-}
+.help-steps li { counter-increment: step; position: relative; padding: 10px 12px 10px 42px; font-size: 14px; line-height: 1.5; background: var(--secondary-bg); border-radius: 10px; margin-bottom: 6px; }
+.help-steps li::before { content: counter(step); position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 22px; height: 22px; border-radius: 50%; background: var(--button); color: var(--button-text); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.help-tip { background: rgba(36,139,237,0.08); border-left: 3px solid var(--button); padding: 10px 12px; border-radius: 8px; font-size: 13px; line-height: 1.5; margin-top: 10px; color: var(--text); }
 .help-tip b { color: var(--button); }
-.help-badge {
-  display: inline-block; padding: 2px 8px; border-radius: 6px;
-  font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
-  background: var(--button); color: var(--button-text);
-  margin-left: 6px; vertical-align: middle;
-}
+.help-badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.3px; background: var(--button); color: var(--button-text); margin-left: 6px; vertical-align: middle; }
 .help-badge.gray { background: var(--hint); }
 </style>
 </head>
@@ -174,10 +146,9 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
   <button class="help-btn" id="helpBtn">📲 Как добавить на рабочий стол</button>
 
   <div class="author">Разработчик · <b>Минаев Захар</b></div>
-  <div class="version" id="versionLabel">v 2026-09-25.1</div>
+  <div class="version">v 2026-09-25.1</div>
 </div>
 
-<!-- Редактор дня -->
 <div class="overlay" id="overlay">
   <div class="modal">
     <h2 id="modalTitle">Новый день</h2>
@@ -190,7 +161,6 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
   </div>
 </div>
 
-<!-- Подтверждение -->
 <div class="overlay" id="confirmOverlay">
   <div class="modal confirm-modal">
     <h2 id="confirmTitle">Удалить?</h2>
@@ -202,7 +172,6 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
   </div>
 </div>
 
-<!-- Инструкция -->
 <div class="overlay" id="helpOverlay">
   <div class="modal">
     <h2>📲 Как добавить на рабочий стол</h2>
@@ -218,7 +187,7 @@ h1 { font-size: 20px; text-align: center; margin: 8px 0 16px; }
 
 <script>
 // ============================================================
-// Совместимость (Telegram удалён — работаем как обычный сайт)
+// Совместимость
 // ============================================================
 const tg = null;
 function haptic() {}
@@ -232,7 +201,7 @@ function showToast(msg) {
 }
 
 // ============================================================
-// Хранилище (с проверкой доступности)
+// Хранилище
 // ============================================================
 const STORAGE_KEY = 'fuel_tracker_v5';
 const NORMS_KEY = 'fuel_norms_v1';
@@ -435,3 +404,277 @@ function openEditor(dateStr) {
   const prev = prevDate ? data[prevDate] : null;
   const autoOdoStart = prev ? prev._odoEnd : null;
   const autoFuelStart = prev ? prev._fuelEnd : null;
+  document.getElementById('modalTitle').textContent = isNew ? 'Новый день' : 'Редактировать';
+  document.getElementById('btnDelete').style.display = isNew ? 'none' : 'flex';
+  function v(key, fb) { return (r[key] !== undefined && r[key] !== null && r[key] !== '') ? r[key] : (fb !== undefined ? fb : ''); }
+  let html = '<div class="field"><label>Дата</label><input type="date" id="f_date" value="' + editDate + '"></div>';
+  html += '<div class="section-title">Показатели на начало дня</div>';
+  if (isEarliest) {
+    html += '<div class="row2"><div class="field"><label>Одометр, км</label><input type="number" id="f_odoStart" value="' + (isNew ? '' : v('odoStart')) + '"></div>';
+    html += '<div class="field"><label>Топливо, л</label><input type="number" id="f_fuelStart" value="' + (isNew ? '' : v('fuelStart')) + '"></div></div>';
+    html += '<div class="field-hint" style="margin:-6px 0 12px 2px;">Базовая точка отсчёта.</div>';
+  } else {
+    const mOdo = !!r.odoStartManual, mFuel = !!r.fuelStartManual;
+    const aOdo = autoOdoStart !== null ? String(autoOdoStart) : '', aFuel = autoFuelStart !== null ? String(autoFuelStart) : '';
+    const sOdo = mOdo ? num(r.odoStart) : aOdo, sFuel = mFuel ? num(r.fuelStart) : aFuel;
+    html += '<div class="row2">';
+    html += '<div class="field field-with-reset"><label id="odoLabel">Одометр, км' + (mOdo ? ' (правка)' : ' (авто)') + '</label>';
+    html += '<input type="number" id="f_odoStart" value="' + sOdo + '" data-auto="' + aOdo + '" data-manual="' + (mOdo ? '1' : '0') + '"' + (mOdo ? ' class="manual"' : '') + '>';
+    html += '<button type="button" class="reset-btn" id="f_odoReset" style="display:' + (mOdo ? 'block' : 'none') + ';">↺</button></div>';
+    html += '<div class="field field-with-reset"><label id="fuelLabel">Топливо, л' + (mFuel ? ' (правка)' : ' (авто)') + '</label>';
+    html += '<input type="number" id="f_fuelStart" value="' + sFuel + '" data-auto="' + aFuel + '" data-manual="' + (mFuel ? '1' : '0') + '"' + (mFuel ? ' class="manual"' : '') + '>';
+    html += '<button type="button" class="reset-btn" id="f_fuelReset" style="display:' + (mFuel ? 'block' : 'none') + ';">↺</button></div></div>';
+    html += '<div class="field-hint" style="margin:-6px 0 12px 2px;">Авто: одометр <b>' + (autoOdoStart !== null ? fmt(autoOdoStart,0) + ' км' : '—') + '</b>, топливо <b>' + (autoFuelStart !== null ? fmt(autoFuelStart) + ' л' : '—') + '</b>.</div>';
+  }
+  const odoEndDef = isNew ? (prev ? prev._odoEnd : '') : v('odoEnd');
+  const hNormDef = isNew ? (prev ? prev.highwayNorm : '') : v('highwayNorm');
+  const mNormDef = isNew ? (prev ? prev.millionNorm : '') : v('millionNorm');
+  const cNormDef = isNew ? (prev ? prev.cityNorm : '') : v('cityNorm');
+  html += '<div class="section-title">Показания за день</div>';
+  html += '<div class="field"><label>Одометр на конец дня, км</label><input type="number" id="f_odoEnd" value="' + odoEndDef + '"></div>';
+  html += '<div class="field"><label>Заправлено, л</label><input type="number" id="f_fuelAdded" value="' + (isNew ? '' : v('fuelAdded')) + '"></div>';
+  html += '<div class="section-title">Трасса</div><div class="row2">';
+  html += '<div class="field"><label>Пробег, км</label><input type="number" id="f_highway" value="' + (isNew ? '' : v('highway')) + '"></div>';
+  html += '<div class="field"><label>Норма</label><input type="number" id="f_highwayNorm" list="normList" value="' + hNormDef + '"></div></div>';
+  html += '<div class="section-title">Город миллионник</div><div class="row2">';
+  html += '<div class="field"><label>Пробег, км</label><input type="number" id="f_million" value="' + (isNew ? '' : v('million')) + '"></div>';
+  html += '<div class="field"><label>Норма</label><input type="number" id="f_millionNorm" list="normList" value="' + mNormDef + '"></div></div>';
+  html += '<div class="field"><label>Норма по городу</label><input type="number" id="f_cityNorm" list="normList" value="' + cNormDef + '"></div>';
+  document.getElementById('modalFields').innerHTML = html;
+  setupManualToggle('f_odoStart', 'f_odoReset', 'odoLabel', 'Одометр, км');
+  setupManualToggle('f_fuelStart', 'f_fuelReset', 'fuelLabel', 'Топливо, л');
+  document.getElementById('overlay').classList.add('show');
+}
+
+function setupManualToggle(inputId, resetId, labelId, baseLabel) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const autoStr = input.getAttribute('data-auto');
+  if (autoStr === null) return;
+  const autoNum = autoStr === '' ? null : num(autoStr);
+  function refresh() {
+    const cur = num(input.value);
+    const isManual = autoNum === null ? true : Math.abs(cur - autoNum) > 0.0001;
+    input.classList.toggle('manual', isManual);
+    input.setAttribute('data-manual', isManual ? '1' : '0');
+    const btn = document.getElementById(resetId);
+    if (btn) btn.style.display = isManual ? 'block' : 'none';
+    const lbl = document.getElementById(labelId);
+    if (lbl) lbl.textContent = baseLabel + (isManual ? ' (правка)' : ' (авто)');
+  }
+  input.addEventListener('input', refresh);
+  const btn = document.getElementById(resetId);
+  if (btn) btn.onclick = e => { e.preventDefault(); input.value = autoNum !== null ? autoNum : ''; refresh(); };
+}
+
+function closeEditor() { document.getElementById('overlay').classList.remove('show'); editingDate = null; }
+
+function saveEditor() {
+  const newDate = document.getElementById('f_date').value;
+  if (!newDate) { showToast('Укажите дату'); return; }
+  const record = {
+    odoEnd: val('f_odoEnd'), fuelAdded: val('f_fuelAdded'),
+    highway: val('f_highway'), highwayNorm: val('f_highwayNorm'),
+    million: val('f_million'), millionNorm: val('f_millionNorm'),
+    cityNorm: val('f_cityNorm')
+  };
+  const odoEl = document.getElementById('f_odoStart');
+  if (odoEl) {
+    record.odoStart = num(odoEl.value);
+    const isManual = odoEl.getAttribute('data-manual') === '1';
+    const others = Object.keys(data).filter(d => d !== editingDate && d !== newDate).sort();
+    record.odoStartManual = (!others.length || newDate <= others[0]) ? false : isManual;
+  }
+  const fuelEl = document.getElementById('f_fuelStart');
+  if (fuelEl) {
+    record.fuelStart = num(fuelEl.value);
+    const isManual = fuelEl.getAttribute('data-manual') === '1';
+    const others = Object.keys(data).filter(d => d !== editingDate && d !== newDate).sort();
+    record.fuelStartManual = (!others.length || newDate <= others[0]) ? false : isManual;
+  } else if (data[newDate]) {
+    record.fuelStart = data[newDate].fuelStart;
+    record.fuelStartManual = !!data[newDate].fuelStartManual;
+  }
+  rememberNorm('highway', record.highwayNorm);
+  rememberNorm('million', record.millionNorm);
+  rememberNorm('city', record.cityNorm);
+  if (editingDate && editingDate !== newDate) delete data[editingDate];
+  data[newDate] = record;
+  save(); refreshNormDatalist(); closeEditor(); render();
+  showToast('Сохранено: ' + newDate);
+}
+
+function deleteEditor() {
+  if (!editingDate) return;
+  const dt = parseYmd(editingDate);
+  const label = dt.getDate() + ' ' + MONTHS_GEN[dt.getMonth()];
+  const dToDel = editingDate;
+  showConfirm('Удалить?', 'Запись за ' + label + ' будет удалена.', () => {
+    delete data[dToDel]; save(); closeEditor(); render(); showToast('Удалено');
+  });
+}
+
+// ============================================================
+// Инструкция
+// ============================================================
+function detectBrowser() {
+  const ua = navigator.userAgent;
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  const isAndroid = /Android/.test(ua);
+  const isEdge = /Edg\//.test(ua);
+  const isChrome = /Chrome\//.test(ua) && !isEdge && !/OPR\//.test(ua);
+  const isFirefox = /Firefox/.test(ua);
+  const isSamsung = /SamsungBrowser/.test(ua);
+  const isOpera = /OPR\//.test(ua) || /Opera/.test(ua);
+  return { isIOS, isAndroid, isEdge, isChrome, isFirefox, isSamsung, isOpera };
+}
+
+function buildHelpContent() {
+  const b = detectBrowser();
+  let html = '';
+  if (b.isIOS) {
+    html += '<div class="help-section">';
+    html += '<h3><span class="browser-icon">🧭</span>Safari на iPhone / iPad <span class="help-badge">рекомендуется</span></h3>';
+    html += '<ol class="help-steps">';
+    html += '<li>Откройте эту страницу в <b>Safari</b>.</li>';
+    html += '<li>Нажмите кнопку <b>«Поделиться»</b> (квадрат со стрелкой вверх).</li>';
+    html += '<li>Выберите <b>«На экран "Домой"</b>».</li>';
+    html += '<li>Нажмите <b>«Добавить»</b> — иконка появится на рабочем столе.</li>';
+    html += '</ol>';
+    html += '<div class="help-tip">💡 На iPhone добавление работает <b>только в Safari</b>.</div>';
+    html += '</div>';
+    return html;
+  }
+  if (b.isAndroid) {
+    if (b.isChrome || b.isSamsung || b.isOpera) {
+      const name = b.isSamsung ? 'Samsung Internet' : (b.isOpera ? 'Opera' : 'Chrome');
+      html += '<div class="help-section">';
+      html += '<h3><span class="browser-icon">🌐</span>' + name + ' <span class="help-badge">рекомендуется</span></h3>';
+      html += '<ol class="help-steps">';
+      html += '<li>Нажмите <b>меню</b> (⋮ или ≡) в правом верхнем углу.</li>';
+      html += '<li>Выберите <b>«Добавить на главный экран»</b> или <b>«Установить приложение»</b>.</li>';
+      html += '<li>Подтвердите — иконка появится на рабочем столе.</li>';
+      html += '</ol>';
+      html += '</div>';
+    }
+    if (b.isEdge) {
+      html += '<div class="help-section">';
+      html += '<h3><span class="browser-icon">🌊</span>Microsoft Edge <span class="help-badge gray">только ярлык</span></h3>';
+      html += '<ol class="help-steps">';
+      html += '<li>Нажмите <b>меню «…»</b>.</li>';
+      html += '<li>Выберите <b>«Добавить на телефон»</b>.</li>';
+      html += '<li>Подтвердите.</li>';
+      html += '</ol>';
+      html += '<div class="help-tip">⚠️ В Edge откроется как вкладка. Для полноценного приложения — <b>Chrome</b> или <b>Samsung Internet</b>.</div>';
+      html += '</div>';
+    }
+    if (b.isFirefox) {
+      html += '<div class="help-section">';
+      html += '<h3><span class="browser-icon">🦊</span>Firefox</h3>';
+      html += '<ol class="help-steps">';
+      html += '<li>Нажмите <b>меню (⋮)</b>.</li>';
+      html += '<li>Выберите <b>«Установить»</b> или <b>«Добавить на главный экран»</b>.</li>';
+      html += '<li>Подтвердите.</li>';
+      html += '</ol>';
+      html += '</div>';
+    }
+    if (!b.isChrome && !b.isSamsung && !b.isOpera && !b.isEdge && !b.isFirefox) {
+      html += '<div class="help-section">';
+      html += '<h3><span class="browser-icon">🌐</span>Ваш браузер</h3>';
+      html += '<ol class="help-steps">';
+      html += '<li>Откройте <b>меню браузера</b>.</li>';
+      html += '<li>Найдите <b>«Добавить на главный экран»</b> или <b>«Установить приложение»</b>.</li>';
+      html += '<li>Подтвердите.</li>';
+      html += '</ol>';
+      html += '</div>';
+    }
+    return html;
+  }
+  html += '<div class="help-section">';
+  html += '<h3><span class="browser-icon">💻</span>Компьютер</h3>';
+  html += '<ol class="help-steps">';
+  html += '<li>Нажмите <b>⋮</b> или <b>…</b> в правом верхнем углу браузера.</li>';
+  html += '<li>Выберите <b>«Установить приложение»</b> или <b>«Создать ярлык»</b>.</li>';
+  html += '<li>Подтвердите — ярлык появится на рабочем столе.</li>';
+  html += '</ol>';
+  html += '</div>';
+  return html;
+}
+
+function openHelp() {
+  document.getElementById('helpContent').innerHTML = buildHelpContent();
+  document.getElementById('helpOverlay').classList.add('show');
+}
+
+// ============================================================
+// Экспорт / импорт
+// ============================================================
+function exportData() {
+  const clean = {};
+  Object.keys(data).sort().forEach(d => {
+    const r = data[d];
+    clean[d] = { odoStart: num(r.odoStart), odoStartManual: !!r.odoStartManual, odoEnd: num(r.odoEnd),
+      fuelStart: num(r.fuelStart), fuelStartManual: !!r.fuelStartManual, fuelAdded: num(r.fuelAdded),
+      highway: num(r.highway), highwayNorm: num(r.highwayNorm), million: num(r.million),
+      millionNorm: num(r.millionNorm), cityNorm: num(r.cityNorm) };
+  });
+  const payload = { app: 'fuel-tracker', version: 5, author: 'Минаев Захар', norms: norms, records: clean };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'fuel-backup-' + ymd(new Date()) + '.json';
+  a.click();
+  showToast('Файл сохранён');
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      const records = parsed && parsed.records ? parsed.records : parsed;
+      if (!records || typeof records !== 'object') throw new Error('Неверный формат');
+      const keys = Object.keys(records);
+      if (!keys.length) throw new Error('Файл пустой');
+      const doImport = () => {
+        data = {};
+        keys.forEach(d => {
+          const r = records[d];
+          data[d] = { odoStart: num(r.odoStart), odoStartManual: !!r.odoStartManual, odoEnd: num(r.odoEnd),
+            fuelStart: num(r.fuelStart), fuelStartManual: !!r.fuelStartManual, fuelAdded: num(r.fuelAdded),
+            highway: num(r.highway), highwayNorm: num(r.highwayNorm), million: num(r.million),
+            millionNorm: num(r.millionNorm), cityNorm: num(r.cityNorm) };
+        });
+        if (parsed && parsed.norms) { norms = parsed.norms; saveNorms(); }
+        save(); render(); showToast('Импортировано: ' + keys.length);
+      };
+      if (Object.keys(data).length > 0) {
+        showConfirm('Импорт', 'Заменить данные?', doImport);
+      } else { doImport(); }
+    } catch(err) { showToast('Ошибка: ' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+// ============================================================
+// События
+// ============================================================
+document.getElementById('prevMonth').onclick = () => { cursor.setMonth(cursor.getMonth()-1); render(); };
+document.getElementById('nextMonth').onclick = () => { cursor.setMonth(cursor.getMonth()+1); render(); };
+document.getElementById('addBtn').onclick = () => openEditor(null);
+document.getElementById('btnSave').onclick = saveEditor;
+document.getElementById('btnCancel').onclick = closeEditor;
+document.getElementById('btnDelete').onclick = deleteEditor;
+document.getElementById('overlay').onclick = e => { if (e.target === e.currentTarget) closeEditor(); };
+document.getElementById('confirmOverlay').onclick = e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('show'); };
+document.getElementById('helpOverlay').onclick = e => { if (e.target === e.currentTarget) e.currentTarget.classList.remove('show'); };
+document.getElementById('btnExport').onclick = exportData;
+document.getElementById('btnImport').onclick = () => document.getElementById('fileInput').click();
+document.getElementById('fileInput').onchange = e => { const f = e.target.files[0]; if (f) importData(f); e.target.value = ''; };
+document.getElementById('helpBtn').onclick = openHelp;
+document.getElementById('helpClose').onclick = () => document.getElementById('helpOverlay').classList.remove('show');
+
+render();
+</script>
+</body>
+</html>
